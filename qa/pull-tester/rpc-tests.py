@@ -303,6 +303,11 @@ def run_tests(test_list, src_dir, build_dir, exeext, jobs=1, enable_coverage=Fal
     if "ZCASHD" not in os.environ:
         os.environ["ZCASHD"] = build_dir + '/src/zcashd' + exeext
 
+    if "CUSTOM_SCRIPT" not in os.environ:
+      os.environ["CUSTOM_SCRIPT"] = "[]"
+    else:
+      os.environ["CUSTOM_SCRIPT"] = str([os.environ["CUSTOM_SCRIPT"]])
+        
     tests_dir = src_dir + '/qa/rpc-tests/'
 
     flags = ["--srcdir={}/src".format(build_dir)] + args
@@ -380,7 +385,7 @@ class RPCTestHandler:
             log_stderr = tempfile.SpooledTemporaryFile(max_size=2**16)
             self.jobs.append((t,
                               time.time(),
-                              subprocess.Popen((self.tests_dir + t).split() + self.flags + port_seed,
+                              subprocess.Popen(eval(os.environ["CUSTOM_SCRIPT"]) + (self.tests_dir + t).split() + self.flags + port_seed,
                                                universal_newlines=True,
                                                stdout=log_stdout,
                                                stderr=log_stderr),
