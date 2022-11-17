@@ -305,6 +305,9 @@ def run_tests(test_list, src_dir, build_dir, exeext, jobs=1, enable_coverage=Fal
 
     tests_dir = src_dir + '/qa/rpc-tests/'
 
+    flags = ["--srcdir={}/src".format(build_dir)] + args
+    flags.append("--cachedir=%s/qa/cache" % build_dir)
+    
     if len(test_list) > 1 and jobs > 1 and "CUSTOM_SCRIPT" not in os.environ:
         # Populate cache
         subprocess.check_output([tests_dir + 'create_cache.py'] + flags)        
@@ -313,9 +316,6 @@ def run_tests(test_list, src_dir, build_dir, exeext, jobs=1, enable_coverage=Fal
       os.environ["CUSTOM_SCRIPT"] = "[]"
     else:
       os.environ["CUSTOM_SCRIPT"] = str([os.environ["CUSTOM_SCRIPT"]])
-    
-    flags = ["--srcdir={}/src".format(build_dir)] + args
-    flags.append("--cachedir=%s/qa/cache" % build_dir)
 
     if enable_coverage:
         coverage = RPCCoverage()
