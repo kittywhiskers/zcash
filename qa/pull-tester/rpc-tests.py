@@ -303,13 +303,17 @@ def run_tests(test_list, src_dir, build_dir, exeext, jobs=1, enable_coverage=Fal
     if "ZCASHD" not in os.environ:
         os.environ["ZCASHD"] = build_dir + '/src/zcashd' + exeext
 
+    tests_dir = src_dir + '/qa/rpc-tests/'
+
+    if len(test_list) > 1 and jobs > 1 and "CUSTOM_SCRIPT" not in os.environ:
+        # Populate cache
+        subprocess.check_output([tests_dir + 'create_cache.py'] + flags)        
+
     if "CUSTOM_SCRIPT" not in os.environ:
       os.environ["CUSTOM_SCRIPT"] = "[]"
     else:
       os.environ["CUSTOM_SCRIPT"] = str([os.environ["CUSTOM_SCRIPT"]])
-        
-    tests_dir = src_dir + '/qa/rpc-tests/'
-
+    
     flags = ["--srcdir={}/src".format(build_dir)] + args
     flags.append("--cachedir=%s/qa/cache" % build_dir)
 
@@ -319,10 +323,6 @@ def run_tests(test_list, src_dir, build_dir, exeext, jobs=1, enable_coverage=Fal
         print("Initializing coverage directory at %s\n" % coverage.dir)
     else:
         coverage = None
-
-    if len(test_list) > 1 and jobs > 1:
-        # Populate cache
-        subprocess.check_output([tests_dir + 'create_cache.py'] + flags)
 
     #Run Tests
     all_passed = True
