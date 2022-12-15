@@ -5,6 +5,7 @@ ARG FROMBASEOS_BUILD_TAG
 ARG BASE_WORKER_IMAGE
 FROM $BASE_WORKER_IMAGE-$FROMBASEOS-$FROMBASEOS_BUILD_TAG
 
+RUN python -m pip install google-cloud-BigQuery
 COPY ./benchmark-200k-UTXOs.tar.xz /home/benchmark-200k-UTXOs.tar.xz
 COPY ./block-107134.tar.xz /home/block-107134.tar.xz
 COPY ./block-1708048.tar.xz /home/block-1708048.tar.xz
